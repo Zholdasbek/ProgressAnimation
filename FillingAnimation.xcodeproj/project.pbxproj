@@ -12,7 +12,7 @@
 		F0CEAAAB2296B4CB005CDC2C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CEAAA92296B4CB005CDC2C /* Main.storyboard */; };
 		F0CEAAAD2296B4CE005CDC2C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0CEAAAC2296B4CE005CDC2C /* Assets.xcassets */; };
 		F0CEAAB02296B4CE005CDC2C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0CEAAAE2296B4CE005CDC2C /* LaunchScreen.storyboard */; };
-		F0CEAAB82296B510005CDC2C /* DownloadButtonUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0CEAAB72296B510005CDC2C /* DownloadButtonUIView.swift */; };
+		F0CEAAB82296B510005CDC2C /* DownloadUploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0CEAAB72296B510005CDC2C /* DownloadUploadButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +24,7 @@
 		F0CEAAAC2296B4CE005CDC2C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F0CEAAAF2296B4CE005CDC2C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F0CEAAB12296B4CE005CDC2C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F0CEAAB72296B510005CDC2C /* DownloadButtonUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadButtonUIView.swift; sourceTree = "<group>"; };
+		F0CEAAB72296B510005CDC2C /* DownloadUploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadUploadButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,7 @@
 		F0CEAAA42296B4CB005CDC2C /* FillingAnimation */ = {
 			isa = PBXGroup;
 			children = (
-				F0CEAAB72296B510005CDC2C /* DownloadButtonUIView.swift */,
+				F0CEAAB72296B510005CDC2C /* DownloadUploadButton.swift */,
 				F0CEAAA72296B4CB005CDC2C /* ViewController.swift */,
 				F0CEAAA92296B4CB005CDC2C /* Main.storyboard */,
 				F0CEAAAC2296B4CE005CDC2C /* Assets.xcassets */,
@@ -149,7 +149,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0CEAAB82296B510005CDC2C /* DownloadButtonUIView.swift in Sources */,
+				F0CEAAB82296B510005CDC2C /* DownloadUploadButton.swift in Sources */,
 				F0CEAAA82296B4CB005CDC2C /* ViewController.swift in Sources */,
 				F0CEAAA62296B4CB005CDC2C /* AppDelegate.swift in Sources */,
 			);

@@ -12,8 +12,8 @@ class ViewController: UIViewController {
 
     var isStart = true
     
-    lazy var animView: DownloadButtonUIView = {
-        let view = DownloadButtonUIView()
+    lazy var animView: DownloadUploadButton = {
+        let view = DownloadUploadButton()
         let tap = UITapGestureRecognizer(target: self, action: #selector(animatee))
         view.addGestureRecognizer(tap)
         view.translatesAutoresizingMaskIntoConstraints = false

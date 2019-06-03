@@ -21,7 +21,7 @@ enum AnimationButtonType {
         }
     }
     
-    var delay: TimeInterval {
+    var animationDelay: TimeInterval {
         switch self {
         case .upload:
             return 0.1
@@ -31,7 +31,7 @@ enum AnimationButtonType {
     }
 }
 
-class DownloadButtonUIView: UIView {
+class DownloadUploadButton: UIView {
 
     var state: AnimationButtonType = .download
     
@@ -144,7 +144,7 @@ class DownloadButtonUIView: UIView {
             progressLayer.isHidden = false
             self.animateViewTopToBottom()
             self.startCurvedCircleAnimation()
-            DispatchQueue.main.asyncAfter(deadline: .now() + state.delay) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay) {
                 self.startRotatingProgress()
                 self.animateIconSize()
                 self.resetAnimationViewToTop()
@@ -153,7 +153,7 @@ class DownloadButtonUIView: UIView {
         case .upload:
             progressLayer.strokeEnd = 0.18
             progressLayer.strokeStart = 0.17
-            DispatchQueue.main.asyncAfter(deadline: .now() + state.delay, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay, execute: {
                 self.progressLayer.isHidden = false
                 self.startRotatingProgress()
                 self.animateIconSize()
@@ -211,14 +211,14 @@ class DownloadButtonUIView: UIView {
     }
     
     private func startRotatingProgress() {
-        if progressLayer.animation(forKey: DownloadButtonUIView.rotateAnimationKey) == nil {
-            progressLayer.add(rotateAnimation, forKey: DownloadButtonUIView.rotateAnimationKey)
+        if progressLayer.animation(forKey: DownloadUploadButton.rotateAnimationKey) == nil {
+            progressLayer.add(rotateAnimation, forKey: DownloadUploadButton.rotateAnimationKey)
         }
     }
     
     private func stopRotatingProgress() {
-        if progressLayer.animation(forKey: DownloadButtonUIView.rotateAnimationKey) != nil {
-            progressLayer.removeAnimation(forKey: DownloadButtonUIView.rotateAnimationKey)
+        if progressLayer.animation(forKey: DownloadUploadButton.rotateAnimationKey) != nil {
+            progressLayer.removeAnimation(forKey: DownloadUploadButton.rotateAnimationKey)
         }
     }
     

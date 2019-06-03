@@ -33,17 +33,22 @@ enum AnimationButtonType {
 
 class DownloadUploadButton: UIView {
 
+    //MARK: - Public Properties
+    
     var state: AnimationButtonType = .download
     
-    let iconAnimationView = UIView()
-    let iconView = UIView()
-    let iconImageVeiw = UIImageView()
+    //MARK: - Private Properties
+    
+    private let iconAnimationView = UIView()
+    private let iconView = UIView()
+    private let iconImageVeiw = UIImageView()
 
-    var progressLayerPath = UIBezierPath()
-    var progressLayer = CAShapeLayer()
-    static let rotateAnimationKey = "rotation"
+    private var progressLayerPath = UIBezierPath()
+    private var progressLayer = CAShapeLayer()
+    private static let rotateAnimationKey = "rotation"
+    private let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation")
 
-    let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation")
+    // MARK: - Initializers
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,8 +60,62 @@ class DownloadUploadButton: UIView {
         setup()
     }
     
-    private func setup() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
         
+        createCirclePath()
+        setupLayerIconPosition()
+    }
+    
+    //MARK: - Public Methods
+    
+    func startAnimation(){
+        switch state {
+        case .download:
+            progressLayer.isHidden = false
+            self.animateViewTopToBottom()
+            self.startCurvedCircleAnimation()
+            DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay) {
+                self.startRotatingProgress()
+                self.animateIconSize()
+                self.resetAnimationViewToTop()
+                self.iconImageVeiw.image = UIImage(named: "stop")
+            }
+        case .upload:
+            progressLayer.strokeEnd = 0.18
+            progressLayer.strokeStart = 0.17
+            DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay, execute: {
+                self.progressLayer.isHidden = false
+                self.startRotatingProgress()
+                self.animateIconSize()
+                self.iconImageVeiw.image = UIImage(named: "stop")
+            })
+        }
+    }
+    
+    func stopAnimation(){
+        progressLayer.isHidden = true
+        stopRotatingProgress()
+        
+        switch state {
+        case .download:
+            self.animateViewBottomToTop()
+            self.progressLayer.strokeEnd = 0.0
+            self.progressLayer.strokeStart = 0.0
+            self.iconImageVeiw.image = UIImage(named: self.state.imageName)
+        case .upload:
+            iconImageVeiw.image = UIImage(named: self.state.imageName)
+        }
+    }
+    
+    func updateProgress(_ progress: Float) {
+        progressLayer.strokeEnd = 0.18 + CGFloat(progress)
+    }
+    
+    
+    //MARK: - Private methods
+    
+    private func setup() {
         progressLayer.lineCap = CAShapeLayerLineCap.round
         progressLayer.lineWidth = 5
         progressLayer.fillColor = nil
@@ -69,9 +128,9 @@ class DownloadUploadButton: UIView {
         rotateAnimation.fromValue = 0
         rotateAnimation.toValue = Float(Double.pi * 2)
         rotateAnimation.repeatCount = Float(TimeInterval.infinity)
-
+        
         self.layer.addSublayer(progressLayer)
-
+        
         self.backgroundColor = .white
         iconAnimationView.backgroundColor = .white
         iconView.backgroundColor = UIColor.darkGray
@@ -87,15 +146,10 @@ class DownloadUploadButton: UIView {
         resetAnimationViewToTop()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        createCirclePath()
-
+    private func setupLayerIconPosition() {
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
         progressLayer.path = progressLayerPath.cgPath
         progressLayer.position = center
-        
         
         iconAnimationView.frame = CGRect(x: self.bounds.origin.x, y: -self.bounds.height, width: self.bounds.width, height: self.bounds.height)
         iconImageVeiw.frame.size = CGSize(width: self.bounds.width/2.5, height: self.bounds.height/2.5)
@@ -103,7 +157,6 @@ class DownloadUploadButton: UIView {
         
         iconView.center = center
         iconImageVeiw.center = center
-        
     }
     
     private func resetAnimationViewToTop() {
@@ -137,50 +190,6 @@ class DownloadUploadButton: UIView {
         }
     }
     
-    
-    func startAnimation(){
-        switch state {
-        case .download:
-            progressLayer.isHidden = false
-            self.animateViewTopToBottom()
-            self.startCurvedCircleAnimation()
-            DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay) {
-                self.startRotatingProgress()
-                self.animateIconSize()
-                self.resetAnimationViewToTop()
-                self.iconImageVeiw.image = UIImage(named: "stop")
-            }
-        case .upload:
-            progressLayer.strokeEnd = 0.18
-            progressLayer.strokeStart = 0.17
-            DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay, execute: {
-                self.progressLayer.isHidden = false
-                self.startRotatingProgress()
-                self.animateIconSize()
-                self.iconImageVeiw.image = UIImage(named: "stop")
-            })
-        }
-    }
-    
-    func stopAnimation(){
-        progressLayer.isHidden = true
-        stopRotatingProgress()
-
-        switch state {
-        case .download:
-            self.animateViewBottomToTop()
-            self.progressLayer.strokeEnd = 0.0
-            self.progressLayer.strokeStart = 0.0
-            self.iconImageVeiw.image = UIImage(named: self.state.imageName)
-        case .upload:
-            iconImageVeiw.image = UIImage(named: self.state.imageName)
-        }
-    }
-
-    func updateProgress(_ progress: Float) {
-        progressLayer.strokeEnd = 0.18 + CGFloat(progress)
-    }
-    
     private func startCurvedCircleAnimation() {
         let duration: Float = 50
         var counter: Float = 0
@@ -191,6 +200,7 @@ class DownloadUploadButton: UIView {
             DispatchQueue.main.async {
                 
             //MARK: Pice of layer to animation curve
+                
                 let strokeLength = counter/duration
                 
                 if counter < duration {
@@ -239,5 +249,6 @@ class DownloadUploadButton: UIView {
         }
         return result
     }
+    
 }
 

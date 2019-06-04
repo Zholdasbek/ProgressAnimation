@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum AnimationButtonType {
+enum AnimationButtonState {
     case download
     case upload
     
@@ -35,19 +35,26 @@ class DownloadUploadButton: UIView {
 
     //MARK: - Public Properties
     
-    var state: AnimationButtonType = .download
+    var state: AnimationButtonState = .download
     
     //MARK: - Private Properties
     
     private let iconAnimationView = UIView()
     private let iconView = UIView()
     private let iconImageVeiw = UIImageView()
+    
+    private let iconImageSizeFromButton: CGFloat = 2.5
+    
+    private let iconBackgroundViewAnimationDuration: Double = 0.4
 
     private var progressLayerPath = UIBezierPath()
     private var progressLayer = CAShapeLayer()
     private static let rotateAnimationKey = "rotation"
     private let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation")
-
+    
+    private var pieceOfLayerStrokeEnd: CGFloat = 0.18
+    private var pieceOfLayerStrokeStart: CGFloat = 0.17
+    
     // MARK: - Initializers
 
     override init(frame: CGRect) {
@@ -69,7 +76,7 @@ class DownloadUploadButton: UIView {
     
     //MARK: - Public Methods
     
-    func startAnimation(){
+    func startAnimation() {
         switch state {
         case .download:
             progressLayer.isHidden = false
@@ -82,8 +89,8 @@ class DownloadUploadButton: UIView {
                 self.iconImageVeiw.image = UIImage(named: "stop")
             }
         case .upload:
-            progressLayer.strokeEnd = 0.18
-            progressLayer.strokeStart = 0.17
+            progressLayer.strokeEnd = pieceOfLayerStrokeEnd
+            progressLayer.strokeStart = pieceOfLayerStrokeStart
             DispatchQueue.main.asyncAfter(deadline: .now() + state.animationDelay, execute: {
                 self.progressLayer.isHidden = false
                 self.startRotatingProgress()
@@ -93,7 +100,7 @@ class DownloadUploadButton: UIView {
         }
     }
     
-    func stopAnimation(){
+    func stopAnimation() {
         progressLayer.isHidden = true
         stopRotatingProgress()
         
@@ -109,7 +116,7 @@ class DownloadUploadButton: UIView {
     }
     
     func updateProgress(_ progress: Float) {
-        progressLayer.strokeEnd = 0.18 + CGFloat(progress)
+        progressLayer.strokeEnd = pieceOfLayerStrokeEnd + CGFloat(progress)
     }
     
     
@@ -126,7 +133,7 @@ class DownloadUploadButton: UIView {
         rotateAnimation.duration = 2
         rotateAnimation.repeatCount = Float.infinity
         rotateAnimation.fromValue = 0
-        rotateAnimation.toValue = Float(Double.pi * 2)
+        rotateAnimation.toValue = CGFloat(Double.pi * 2)
         rotateAnimation.repeatCount = Float(TimeInterval.infinity)
         
         self.layer.addSublayer(progressLayer)
@@ -148,11 +155,12 @@ class DownloadUploadButton: UIView {
     
     private func setupLayerIconPosition() {
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
+        
         progressLayer.path = progressLayerPath.cgPath
         progressLayer.position = center
         
         iconAnimationView.frame = CGRect(x: self.bounds.origin.x, y: -self.bounds.height, width: self.bounds.width, height: self.bounds.height)
-        iconImageVeiw.frame.size = CGSize(width: self.bounds.width/2.5, height: self.bounds.height/2.5)
+        iconImageVeiw.frame.size = CGSize(width: self.bounds.width/iconImageSizeFromButton, height: self.bounds.height/iconImageSizeFromButton)
         iconView.frame = self.bounds
         
         iconView.center = center
@@ -169,49 +177,53 @@ class DownloadUploadButton: UIView {
     
     private func animateViewTopToBottom() {
         resetAnimationViewToTop()
-        UIView.animate(withDuration: 0.4) {
+        UIView.animate(withDuration: iconBackgroundViewAnimationDuration) {
             self.iconAnimationView.frame.origin.y = 0
         }
     }
     
     private func animateViewBottomToTop() {
         resetAnimationViewToBottom()
-        UIView.animate(withDuration: 0.4){
+        UIView.animate(withDuration: iconBackgroundViewAnimationDuration){
             self.iconAnimationView.frame.origin.y = -self.bounds.height
         }
     }
     
-    private func animateIconSize(){
-        iconImageVeiw.frame.size = CGSize(width: 0, height: 0)
-        iconImageVeiw.frame.origin = CGPoint(x: self.bounds.width/2, y: self.bounds.height/2)
-        UIView.animate(withDuration: 0.3) {
-            self.iconImageVeiw.frame.size = CGSize(width: self.bounds.width/2.5, height: self.bounds.height/2.5)
-            self.iconImageVeiw.frame.origin = CGPoint(x: self.bounds.width/3.33, y: self.bounds.height/3.33)
+    private func animateIconSize() {
+        
+        let iconSizeAnimationDuration: Double = 0.3
+        
+        iconImageVeiw.frame.size = CGSize.zero
+        iconImageVeiw.frame.origin = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        
+        UIView.animate(withDuration: iconSizeAnimationDuration) {
+            self.iconImageVeiw.frame.size = CGSize(width: self.bounds.width/self.iconImageSizeFromButton, height: self.bounds.height/self.iconImageSizeFromButton)
+            self.iconImageVeiw.center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
         }
     }
     
     private func startCurvedCircleAnimation() {
-        let duration: Float = 50
-        var counter: Float = 0
-        let pieceOfLayerStrokeEnd: Float = 0.18
-        let pieceOfLayerStrokeStart: Float = 0.17
+        let duration: CGFloat = 50
+        var counter: CGFloat = 0
         
         let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { (timer) in
             DispatchQueue.main.async {
                 
             //MARK: Pice of layer to animation curve
                 
-                let strokeLength = counter/duration
+                let strokeLength: CGFloat = counter/duration
                 
                 if counter < duration {
-                    if strokeLength <= pieceOfLayerStrokeEnd {
-                        self.progressLayer.strokeEnd = CGFloat(strokeLength)
+                    if strokeLength <= self.pieceOfLayerStrokeEnd {
+                        self.progressLayer.strokeEnd = strokeLength
                     }
-                    let delay = 0.17
+                    
+                    let delay: Double = 0.17
                     DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: {
-                        self.progressLayer.strokeStart = CGFloat(pieceOfLayerStrokeStart)
+                        self.progressLayer.strokeStart = self.pieceOfLayerStrokeStart
                     })
                     counter += 1
+                    
                 } else {
                     timer.invalidate()
                 }
@@ -233,14 +245,19 @@ class DownloadUploadButton: UIView {
     }
     
     private func createCirclePath() {
-        let curvingPoint = getCirclePoints(centerPoint: CGPoint.zero, radius: self.bounds.width/2.5, n: 12)
+        let numberOfPointToGet = 12
+        let circlePathRadius = self.bounds.width/2.5
+        
+        let curvingPoint = getCirclePoints(centerPoint: CGPoint.zero, radius: circlePathRadius, n: numberOfPointToGet)
         
         progressLayerPath.move(to: CGPoint.zero)
+        
         progressLayerPath.addCurve(to: curvingPoint[4], controlPoint1: CGPoint(x: 0.0, y: curvingPoint[4].y-(curvingPoint[4].y)/4), controlPoint2: CGPoint(x: 0.0, y: curvingPoint[4].y))
-        progressLayerPath.addArc(withCenter: CGPoint.zero, radius: self.bounds.width/2.5, startAngle: CGFloat(Double.pi / 2 + 0.5), endAngle: CGFloat(Double.pi * 2.5 + 0.5), clockwise: true)
+        
+        progressLayerPath.addArc(withCenter: CGPoint.zero, radius: circlePathRadius, startAngle: CGFloat(Double.pi / 2 + 0.5), endAngle: CGFloat(Double.pi * 2.5 + 0.5), clockwise: true)
     }
     
-    private func getCirclePoints(centerPoint point: CGPoint, radius: CGFloat, n: Int)->[CGPoint] {
+    private func getCirclePoints(centerPoint point: CGPoint, radius: CGFloat, n: Int) -> [CGPoint] {
         let result: [CGPoint] = stride(from: 0.0, to: 360.0, by: Double(360 / n)).map {
             let bearing = CGFloat($0) * .pi / 180
             let x = point.x + radius * cos(bearing)

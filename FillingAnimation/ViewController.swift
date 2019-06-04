@@ -36,7 +36,7 @@ class ViewController: UIViewController {
     var progres: Float = 0
     var timer: Timer?
 
-    @objc func animatee(){
+    @objc func animatee() {
         if isStart{
             isStart = !isStart
             animView.state = .download
